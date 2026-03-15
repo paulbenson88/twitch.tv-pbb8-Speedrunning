@@ -500,15 +500,98 @@
     URL.revokeObjectURL(a.href);
   }
 
-  // Delegation for per-run calendar export buttons
+  /* ── Calendar URL generators ───────────────────── */
+
+  function googleCalUrl(ev, run) {
+    const start = new Date(run.date);
+    const end = new Date(start.getTime() + durationMs(run.estimate));
+    const title = `${run.game} — ${ev.name}`;
+    const details = ev.twitch ? `Watch at https://twitch.tv/${ev.twitch}` : "";
+    const p = new URLSearchParams({
+      action: "TEMPLATE",
+      text: title,
+      dates: `${icsTimestamp(start)}/${icsTimestamp(end)}`,
+      details,
+    });
+    return `https://calendar.google.com/calendar/render?${p}`;
+  }
+
+  function outlookCalUrl(ev, run) {
+    const start = new Date(run.date);
+    const end = new Date(start.getTime() + durationMs(run.estimate));
+    const title = `${run.game} — ${ev.name}`;
+    const body = ev.twitch ? `Watch at https://twitch.tv/${ev.twitch}` : "";
+    const p = new URLSearchParams({
+      rru: "addevent",
+      subject: title,
+      startdt: start.toISOString(),
+      enddt: end.toISOString(),
+      body,
+      path: "/calendar/action/compose",
+    });
+    return `https://outlook.live.com/calendar/0/action/compose?${p}`;
+  }
+
+  function yahooCalUrl(ev, run) {
+    const start = new Date(run.date);
+    const end = new Date(start.getTime() + durationMs(run.estimate));
+    const title = `${run.game} — ${ev.name}`;
+    const desc = ev.twitch ? `Watch at https://twitch.tv/${ev.twitch}` : "";
+    const p = new URLSearchParams({
+      v: "60",
+      title,
+      st: icsTimestamp(start),
+      et: icsTimestamp(end),
+      desc,
+    });
+    return `https://calendar.yahoo.com/?${p}`;
+  }
+
+  /** Return HTML for the per-run "Add to Calendar" dropdown. */
+  function calDropdownHTML(evIdx, runIdx) {
+    return `
+      <div class="cal-dropdown-wrap">
+        <button class="add-to-cal-btn" data-ev-idx="${evIdx}" data-run-idx="${runIdx}">📅 Add to Calendar ▾</button>
+        <div class="cal-dropdown">
+          <button class="cal-dropdown-item" data-service="google" data-ev-idx="${evIdx}" data-run-idx="${runIdx}">Google Calendar</button>
+          <button class="cal-dropdown-item" data-service="outlook" data-ev-idx="${evIdx}" data-run-idx="${runIdx}">Outlook.com</button>
+          <button class="cal-dropdown-item" data-service="yahoo" data-ev-idx="${evIdx}" data-run-idx="${runIdx}">Yahoo Calendar</button>
+          <button class="cal-dropdown-item" data-service="ics" data-ev-idx="${evIdx}" data-run-idx="${runIdx}">Download .ics</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // Delegation: toggle dropdown open/close
   document.addEventListener("click", (e) => {
-    const btn = e.target.closest(".add-to-cal-btn");
-    if (!btn) return;
-    const evIdx = +btn.dataset.evIdx;
-    const runIdx = +btn.dataset.runIdx;
+    const toggle = e.target.closest(".add-to-cal-btn");
+    // Close any open dropdowns when clicking elsewhere
+    if (!toggle && !e.target.closest(".cal-dropdown")) {
+      document.querySelectorAll(".cal-dropdown-wrap.open").forEach(w => w.classList.remove("open"));
+      return;
+    }
+    if (toggle) {
+      const wrap = toggle.closest(".cal-dropdown-wrap");
+      const wasOpen = wrap.classList.contains("open");
+      // Close all first
+      document.querySelectorAll(".cal-dropdown-wrap.open").forEach(w => w.classList.remove("open"));
+      if (!wasOpen) wrap.classList.add("open");
+      return;
+    }
+    // Handle item click
+    const item = e.target.closest(".cal-dropdown-item");
+    if (!item) return;
+    const evIdx = +item.dataset.evIdx;
+    const runIdx = +item.dataset.runIdx;
     const ev = MARATHON_EVENTS[evIdx];
     const run = ev.runs[runIdx];
-    exportSingleRunICS(ev, run);
+    const service = item.dataset.service;
+    if (service === "google") window.open(googleCalUrl(ev, run), "_blank");
+    else if (service === "outlook") window.open(outlookCalUrl(ev, run), "_blank");
+    else if (service === "yahoo") window.open(yahooCalUrl(ev, run), "_blank");
+    else if (service === "ics") exportSingleRunICS(ev, run);
+    // Close dropdown
+    document.querySelectorAll(".cal-dropdown-wrap.open").forEach(w => w.classList.remove("open"));
   });
 
   document.getElementById("export-ics").addEventListener("click", exportICS);
