@@ -439,6 +439,7 @@
       "PRODID:-//SpeedrunCalendar//EN",
       "CALSCALE:GREGORIAN",
       "METHOD:PUBLISH",
+      "X-WR-CALNAME:pbb8's Speedrun Marathon Calendar",
     ];
 
     for (const ev of MARATHON_EVENTS) {
@@ -482,6 +483,7 @@
       "PRODID:-//SpeedrunCalendar//EN",
       "CALSCALE:GREGORIAN",
       "METHOD:PUBLISH",
+      "X-WR-CALNAME:pbb8's Speedrun Marathon Calendar",
       "BEGIN:VEVENT",
       `UID:${uid}`,
       `DTSTART:${icsTimestamp(start)}`,

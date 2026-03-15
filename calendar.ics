@@ -3,7 +3,7 @@ VERSION:2.0
 PRODID:-//pbb8 Speedrun Calendar//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:pbb8's Speedrun Calendar
+X-WR-CALNAME:pbb8's Speedrun Marathon Calendar
 X-WR-CALDESC:Upcoming speedrun marathon runs by pbb8
 REFRESH-INTERVAL;VALUE=DURATION:PT1H
 X-PUBLISHED-TTL:PT1H
