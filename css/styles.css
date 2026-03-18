@@ -127,6 +127,10 @@ main {
   flex: 1;
 }
 
+main.runs-page {
+  max-width: 800px;
+}
+
 /* ── Month Navigation ────────────────────────────────── */
 .month-nav {
   display: flex;
@@ -993,6 +997,10 @@ footer {
   transition: color 0.2s;
 }
 
+.back-link:visited {
+  color: var(--accent);
+}
+
 .back-link:hover {
   color: var(--accent-hover);
   text-decoration: underline;
@@ -1001,26 +1009,31 @@ footer {
 /* ── Nav Link ────────────────────────────────────────── */
 .nav-link {
   display: inline-block;
-  margin-top: 0.5rem;
-  color: var(--accent);
+  margin-top: 0.6rem;
+  padding: 0.45rem 1rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
   text-decoration: none;
   font-weight: 600;
   font-size: 0.9rem;
-  transition: color 0.2s;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.nav-link:visited {
+  color: var(--text);
 }
 
 .nav-link:hover {
-  color: var(--accent-hover);
-  text-decoration: underline;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  text-decoration: none;
 }
 
 /* ── Runs Page ───────────────────────────────────────── */
 .runs-page {
-  max-width: 800px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 1rem;
-  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 2rem;
