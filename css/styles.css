@@ -1109,6 +1109,21 @@ footer {
   border: none;
 }
 
+.embed-fallback {
+  margin-top: 0.55rem;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+.embed-fallback a,
+.embed-fallback a:visited {
+  color: var(--accent);
+}
+
+.embed-fallback a:hover {
+  color: var(--accent-hover);
+}
+
 /* ── Responsive ──────────────────────────────────────── */
 @media (max-width: 600px) {
   .day-cell {

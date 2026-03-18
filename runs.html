@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🎮 My Runs – pbb8</title>
+  <title>My Runs - pbb8</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
@@ -26,10 +26,14 @@
       <p class="run-event-date">March 2026</p>
       <div class="embed-wrap">
         <iframe
-          src="https://player.twitch.tv/?video=2722038682&time=28h15m37s&parent=localhost&parent=127.0.0.1&autoplay=false"
+          class="twitch-embed"
+          data-video-id="2722038682"
+          data-start-time="28h15m37s"
+          title="InstaSpeedathon 2026 Twitch VOD"
           allowfullscreen
         ></iframe>
       </div>
+      <p class="embed-fallback">If Twitch does not load here, <a href="https://www.twitch.tv/videos/2722038682?t=28h15m37s" target="_blank" rel="noopener">open this VOD on Twitch</a>.</p>
     </section>
 
     <section class="run-entry" data-game="Ollie-Oop">
@@ -80,6 +84,33 @@
     (function () {
       const entries = document.querySelectorAll('.run-entry');
       const select = document.getElementById('game-filter');
+      const twitchEmbeds = document.querySelectorAll('.twitch-embed');
+
+      function setupTwitchEmbeds() {
+        const host = window.location.hostname || 'localhost';
+
+        twitchEmbeds.forEach((iframe) => {
+          const videoId = iframe.dataset.videoId;
+          const startTime = iframe.dataset.startTime || '0s';
+
+          const params = new URLSearchParams();
+          params.set('video', videoId);
+          params.set('time', startTime);
+          params.set('autoplay', 'false');
+          params.append('parent', host);
+
+          if (host === 'localhost') {
+            params.append('parent', '127.0.0.1');
+          }
+          if (host === '127.0.0.1') {
+            params.append('parent', 'localhost');
+          }
+
+          iframe.src = `https://player.twitch.tv/?${params.toString()}`;
+        });
+      }
+
+      setupTwitchEmbeds();
 
       // Build unique game list
       const games = [...new Set([...entries].map(e => e.dataset.game))].sort();
