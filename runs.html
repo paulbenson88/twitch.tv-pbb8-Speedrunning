@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Runs - pbb8</title>
+  <title>Previous Runs - pbb8</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
@@ -11,7 +11,11 @@
   <header>
     <h1>🎮 pbb8's Runs</h1>
     <p class="stream-line"><a href="https://twitch.tv/pbb8" target="_blank" rel="noopener" class="stream-link">twitch.tv/pbb8</a></p>
-    <p class="subtitle"><a href="index.html" class="back-link">&larr; Back to Calendar</a></p>
+    <nav class="site-tabs" aria-label="Primary navigation">
+      <a href="index.html" class="site-tab">Home</a>
+      <a href="calendar.html" class="site-tab">Calendar</a>
+      <a href="runs.html" class="site-tab active">Previous Runs</a>
+    </nav>
   </header>
 
   <main class="runs-page">
@@ -20,16 +24,16 @@
       <select id="game-filter"></select>
     </div>
 
-    <section class="run-entry" data-game="Ollie-Oop">
-      <h2 class="run-event-title">InstaSpeedathon 2026</h2>
+    <section class="run-entry" data-game="Ollie-Oop" data-run-id="51011">
+      <h2 class="run-event-title">Gamers Against Cancer 2026</h2>
       <p class="run-event-game">Ollie-Oop — All Missions</p>
-      <p class="run-event-date">March 2026</p>
+      <p class="run-event-date">March 15, 2026</p>
       <div class="embed-wrap">
         <iframe
           class="twitch-embed"
           data-video-id="2722038682"
           data-start-time="28h15m37s"
-          title="InstaSpeedathon 2026 Twitch VOD"
+          title="Gamers Against Cancer 2026 Twitch VOD"
           allowfullscreen
         ></iframe>
       </div>
@@ -39,7 +43,7 @@
     <section class="run-entry" data-game="Ollie-Oop">
       <h2 class="run-event-title">Speedromizer VIII</h2>
       <p class="run-event-game">Ollie-Oop — All Missions</p>
-      <p class="run-event-date">December 2025</p>
+      <p class="run-event-date">December 13, 2025</p>
       <div class="embed-wrap">
         <iframe
           src="https://www.youtube-nocookie.com/embed/_gsMWvE6SoM"
@@ -52,7 +56,7 @@
     <section class="run-entry" data-game="Legacy of Kain: Soul Reaver 2">
       <h2 class="run-event-title">Speedromizer VII</h2>
       <p class="run-event-game">Legacy of Kain: Soul Reaver 2 — Any% Unrestricted</p>
-      <p class="run-event-date">June 2025</p>
+      <p class="run-event-date">June 21, 2025</p>
       <div class="embed-wrap">
         <iframe
           src="https://www.youtube-nocookie.com/embed/n1hN4s5a-H0"
@@ -65,7 +69,7 @@
     <section class="run-entry" data-game="Bad Way">
       <h2 class="run-event-title">Speedromizer VI</h2>
       <p class="run-event-game">Bad Way — Any%</p>
-      <p class="run-event-date">November 2024</p>
+      <p class="run-event-date">November 23, 2024</p>
       <div class="embed-wrap">
         <iframe
           src="https://www.youtube-nocookie.com/embed/eHsA_vrLj2g"
@@ -80,11 +84,73 @@
     <p>&copy; 2026 Speedrun Marathon Calendar</p>
   </footer>
 
+  <script src="js/events.js"></script>
   <script>
     (function () {
-      const entries = document.querySelectorAll('.run-entry');
+      const runsMain = document.querySelector('.runs-page');
       const select = document.getElementById('game-filter');
       const twitchEmbeds = document.querySelectorAll('.twitch-embed');
+      const RECENT_PLACEHOLDER_DAYS = 7;
+
+      function formatRunDate(date) {
+        return date.toLocaleDateString(undefined, {
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric'
+        });
+      }
+
+      function createPlaceholderEntry(ev, run) {
+        const section = document.createElement('section');
+        section.className = 'run-entry run-placeholder';
+        section.dataset.game = run.game;
+        section.dataset.runId = String(run.runId);
+
+        section.innerHTML = `
+          <h2 class="run-event-title">${ev.name}</h2>
+          <p class="run-event-game">${run.game} — ${run.category}</p>
+          <p class="run-event-date">${formatRunDate(new Date(run.date))}</p>
+          <p class="embed-fallback">VOD placeholder: upload pending for this run.</p>
+        `;
+
+        return section;
+      }
+
+      function addRecentPlaceholders() {
+        const events = (typeof MARATHON_EVENTS !== 'undefined' && Array.isArray(MARATHON_EVENTS))
+          ? MARATHON_EVENTS
+          : (Array.isArray(globalThis.MARATHON_EVENTS) ? globalThis.MARATHON_EVENTS : null);
+        if (!events) return;
+        const firstRunEntry = runsMain.querySelector('.run-entry');
+
+        const existingIds = new Set(
+          [...document.querySelectorAll('.run-entry[data-run-id]')]
+            .map((entry) => entry.dataset.runId)
+            .filter(Boolean)
+        );
+
+        const now = new Date();
+        const cutoff = new Date(now.getTime() - RECENT_PLACEHOLDER_DAYS * 24 * 60 * 60 * 1000);
+        const placeholders = [];
+
+        for (const ev of events) {
+          for (const run of ev.runs || []) {
+            const runId = String(run.runId);
+            const runDate = new Date(run.date);
+
+            if (existingIds.has(runId)) continue;
+            if (runDate > now || runDate < cutoff) continue;
+
+            placeholders.push({ ev, run, runDate });
+          }
+        }
+
+        placeholders
+          .sort((a, b) => b.runDate - a.runDate)
+          .forEach(({ ev, run }) => {
+            runsMain.insertBefore(createPlaceholderEntry(ev, run), firstRunEntry);
+          });
+      }
 
       function setupTwitchEmbeds() {
         const host = window.location.hostname || 'localhost';
@@ -110,10 +176,13 @@
         });
       }
 
+      addRecentPlaceholders();
       setupTwitchEmbeds();
 
+      const getEntries = () => [...document.querySelectorAll('.run-entry')];
+
       // Build unique game list
-      const games = [...new Set([...entries].map(e => e.dataset.game))].sort();
+      const games = [...new Set(getEntries().map(e => e.dataset.game))].sort();
       const allOpt = document.createElement('option');
       allOpt.value = '';
       allOpt.textContent = 'All Games';
@@ -126,7 +195,7 @@
       });
 
       function applyFilter(game) {
-        entries.forEach(entry => {
+        getEntries().forEach(entry => {
           entry.style.display = (!game || entry.dataset.game === game) ? '' : 'none';
         });
       }

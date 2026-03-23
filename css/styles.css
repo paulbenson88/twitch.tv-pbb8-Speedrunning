@@ -52,6 +52,10 @@ body {
   flex-direction: column;
 }
 
+.hidden {
+  display: none !important;
+}
+
 /* ── Header ──────────────────────────────────────────── */
 header {
   text-align: center;
@@ -129,6 +133,10 @@ main {
 
 main.runs-page {
   max-width: 800px;
+}
+
+main.calendar-page {
+  max-width: 860px;
 }
 
 /* ── Month Navigation ────────────────────────────────── */
@@ -538,6 +546,7 @@ main.runs-page {
 /* ── Upcoming List ───────────────────────────────────── */
 .upcoming {
   margin-top: 2rem;
+  margin-bottom: 1.4rem;
 }
 
 .upcoming h2 {
@@ -1032,6 +1041,147 @@ footer {
   text-decoration: none;
 }
 
+/* ── Site Tabs ───────────────────────────────────────── */
+.site-tabs {
+  margin-top: 0.75rem;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.site-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 96px;
+  padding: 0.42rem 0.95rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  transition: transform 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.site-tab:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent);
+  background: var(--surface);
+}
+
+.site-tab.active,
+.site-tab.active:visited {
+  color: #fff;
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+/* ── Landing Page ───────────────────────────────────── */
+.landing-page {
+  max-width: 860px;
+  display: grid;
+  gap: 1.1rem;
+}
+
+.landing-hero,
+.stream-panel {
+  background: linear-gradient(145deg, var(--card), var(--surface));
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.15rem;
+}
+
+.landing-hero h2,
+.stream-panel h2 {
+  font-size: 1.35rem;
+}
+
+.landing-hero p,
+.stream-panel-note {
+  margin-top: 0.5rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.stream-offline {
+  margin-top: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.stream-offline-image {
+  width: 100%;
+  max-width: 720px;
+  min-height: 180px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(1.5rem, 4vw, 2.4rem);
+  letter-spacing: 0.08em;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+  background:
+    radial-gradient(circle at 18% 18%, rgba(91, 155, 245, 0.28), transparent 42%),
+    radial-gradient(circle at 80% 22%, rgba(147, 197, 253, 0.18), transparent 38%),
+    linear-gradient(135deg, #1d2438, #101422);
+}
+
+.follow-btn {
+  min-width: 210px;
+}
+
+.landing-cta-row {
+  margin-top: 0.95rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.landing-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-weight: 700;
+  color: var(--text);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  transition: transform 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.landing-cta:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent);
+  background: var(--card);
+}
+
+.landing-cta-primary,
+.landing-cta-primary:visited {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.landing-cta-primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.stream-embed-wrap {
+  margin-top: 0.8rem;
+}
+
 /* ── Runs Page ───────────────────────────────────────── */
 .runs-page {
   display: flex;
@@ -1100,7 +1250,8 @@ footer {
   background: #000;
 }
 
-.embed-wrap iframe {
+.embed-wrap iframe,
+.stream-player-host {
   position: absolute;
   top: 0;
   left: 0;
@@ -1129,6 +1280,19 @@ footer {
   .day-cell {
     min-height: 54px;
     padding: 0.25rem;
+  }
+
+  .site-tabs {
+    width: 100%;
+  }
+
+  .site-tab {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .landing-cta {
+    width: 100%;
   }
 
   .event-label {

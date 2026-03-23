@@ -339,9 +339,28 @@
 
   function renderUpcoming() {
     const now = new Date();
+    const nowMs = now.getTime();
+
+    function nextUpcomingRunTime(ev) {
+      const upcomingRunTimes = (ev.runs || [])
+        .map((run) => new Date(run.date).getTime())
+        .filter((ts) => ts >= nowMs);
+      return upcomingRunTimes.length ? Math.min(...upcomingRunTimes) : null;
+    }
+
     const upcoming = MARATHON_EVENTS
-      .filter((ev) => new Date(ev.end) >= now)
-      .sort((a, b) => new Date(a.start) - new Date(b.start))
+      .filter((ev) => {
+        const runs = ev.runs || [];
+        if (runs.length === 0) return new Date(ev.end) >= now;
+        // Keep marathons only while at least one run is still upcoming.
+        return nextUpcomingRunTime(ev) !== null;
+      })
+      .sort((a, b) => {
+        const aNextRun = nextUpcomingRunTime(a);
+        const bNextRun = nextUpcomingRunTime(b);
+        if (aNextRun !== null && bNextRun !== null) return aNextRun - bNextRun;
+        return new Date(a.start) - new Date(b.start);
+      })
       .slice(0, 6);
 
     upcomingList.innerHTML = "";

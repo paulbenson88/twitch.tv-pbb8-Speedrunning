@@ -3,51 +3,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Speedrun Marathon Calendar</title>
+  <title>pbb8 Speedrun Hub</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
   <header>
-    <h1>🎮 pbb8's Speedrun Calendar</h1>
-    <button id="admin-toggle" class="admin-btn" title="Unlock admin mode">🔒</button>
+    <h1>🎮 pbb8 Speedrun Hub</h1>
     <p class="stream-line"><a href="https://twitch.tv/pbb8" target="_blank" rel="noopener" class="stream-link">twitch.tv/pbb8</a></p>
-    <a href="runs.html" class="nav-link">🎬 My Runs</a>
-    <p class="subtitle">All times shown in your local timezone&nbsp;(<span id="tz-label"></span>)</p>
+    <nav class="site-tabs" aria-label="Primary navigation">
+      <a href="index.html" class="site-tab active">Home</a>
+      <a href="calendar.html" class="site-tab">Calendar</a>
+      <a href="runs.html" class="site-tab">Previous Runs</a>
+    </nav>
   </header>
 
-  <main>
-    <section id="next-up" class="next-up hidden"></section>
-
-    <section class="upcoming">
-      <h2>Upcoming Marathons</h2>
-      <ul id="upcoming-list"></ul>
-      <div class="calendar-actions">
-        <button id="subscribe-btn" class="subscribe-btn">🔔 Subscribe to all current and future runs</button>
-        <button id="export-ics" class="export-btn">📅 Export All Runs (.ics)</button>
+  <main class="landing-page">
+    <section class="landing-hero">
+      <h2>Welcome!</h2>
+      <p>Here you can catch my upcoming marathon runs, watch past speedrun marathon showcases, and catch the stream when I'm live!</p>
+      <div class="landing-cta-row">
+        <a href="runs.html" class="landing-cta landing-cta-primary">🎬 Previous Runs</a>
+        <a href="calendar.html" class="landing-cta">📅 Upcoming Marathons</a>
       </div>
     </section>
 
-    <div class="month-nav">
-      <button id="prev-month" aria-label="Previous month">&larr;</button>
-      <h2 id="month-title"></h2>
-      <button id="next-month" aria-label="Next month">&rarr;</button>
-    </div>
-
-    <div class="calendar-grid" id="calendar-grid">
-      <div class="day-header">Sun</div>
-      <div class="day-header">Mon</div>
-      <div class="day-header">Tue</div>
-      <div class="day-header">Wed</div>
-      <div class="day-header">Thu</div>
-      <div class="day-header">Fri</div>
-      <div class="day-header">Sat</div>
-      <!-- day cells injected by JS -->
-    </div>
-
-    <section id="event-details" class="event-details hidden">
-      <h3 id="detail-date"></h3>
-      <ul id="detail-list"></ul>
+    <section class="stream-panel">
+      <h2>Live Stream: <a href="https://twitch.tv/pbb8" target="_blank" rel="noopener noreferrer">twitch.tv/pbb8</a></h2>
+      <div id="stream-offline" class="stream-offline">
+        <div class="stream-offline-image" role="img" aria-label="Channel currently offline">OFFLINE</div>
+        <p class="stream-panel-note">I'm currently offline. Follow on Twitch and you'll get notified when I go live again.</p>
+        <a class="landing-cta landing-cta-primary follow-btn" href="https://twitch.tv/pbb8" target="_blank" rel="noopener">💜 Follow on Twitch</a>
+      </div>
+      <div class="embed-wrap stream-embed-wrap hidden" id="stream-live-wrap">
+        <div id="live-twitch-embed" class="stream-player-host" aria-label="pbb8 live stream"></div>
+      </div>
     </section>
   </main>
 
@@ -55,85 +45,50 @@
     <p>&copy; 2026 Speedrun Marathon Calendar</p>
   </footer>
 
-  <!-- Subscribe Modal -->
-  <div id="subscribe-modal" class="modal-overlay hidden">
-    <div class="modal subscribe-modal">
-      <div class="modal-header">
-        <h3>Subscribe to all current and future runs</h3>
-        <button id="subscribe-close" class="modal-close-btn" aria-label="Close">&times;</button>
-      </div>
-      <div class="modal-body">
-        <p class="subscribe-intro">Subscribe to get pbb8's runs in your calendar app. It stays synced automatically when new runs are added!</p>
+  <script>
+    (function () {
+      const liveWrap = document.getElementById('stream-live-wrap');
+      const offlineWrap = document.getElementById('stream-offline');
+      const host = window.location.hostname || 'localhost';
 
-        <div class="subscribe-option">
-          <h4>📱 iPhone / iPad / Mac</h4>
-          <p>Tap the button below — it will open your Calendar app and ask you to subscribe.</p>
-          <a id="webcal-link" class="subscribe-action-btn" href="#">🔗 Subscribe with Apple Calendar</a>
-        </div>
+      function showOffline() {
+        liveWrap.classList.add('hidden');
+        offlineWrap.classList.remove('hidden');
+      }
 
-        <div class="subscribe-option">
-          <h4>📅 Google Calendar</h4>
-          <ol>
-            <li>Open <a href="https://calendar.google.com/calendar/r/settings/addbyurl" target="_blank" rel="noopener">Google Calendar &rarr; Add by URL</a></li>
-            <li>Paste this URL:</li>
-          </ol>
-          <div class="subscribe-url-row">
-            <input type="text" id="gcal-url" class="subscribe-url-input" readonly />
-            <button class="copy-url-btn" data-target="gcal-url">📋 Copy</button>
-          </div>
-        </div>
+      function showLive() {
+        offlineWrap.classList.add('hidden');
+        liveWrap.classList.remove('hidden');
+      }
 
-        <div class="subscribe-option">
-          <h4>📧 Outlook</h4>
-          <ol>
-            <li>Open Outlook &rarr; Calendar &rarr; Add calendar &rarr; <strong>Subscribe from web</strong></li>
-            <li>Paste this URL:</li>
-          </ol>
-          <div class="subscribe-url-row">
-            <input type="text" id="outlook-url" class="subscribe-url-input" readonly />
-            <button class="copy-url-btn" data-target="outlook-url">📋 Copy</button>
-          </div>
-        </div>
+      showOffline();
 
-        <div class="subscribe-option">
-          <h4>📲 Android / Other</h4>
-          <p>Most calendar apps support "Add calendar by URL". Copy the link below and paste it in your app's subscribe/add settings.</p>
-          <div class="subscribe-url-row">
-            <input type="text" id="other-url" class="subscribe-url-input" readonly />
-            <button class="copy-url-btn" data-target="other-url">📋 Copy</button>
-          </div>
-          <p class="subscribe-tip">💡 Tip: On Android, open this link in your phone's browser to auto-detect your calendar app.</p>
-        </div>
+      window.onTwitchEmbedAPIReady = function () {
+        const parentDomains = [host];
+        if (host === 'localhost') parentDomains.push('127.0.0.1');
+        if (host === '127.0.0.1') parentDomains.push('localhost');
 
-        <div class="subscribe-option">
-          <h4>⬇️ One-time download</h4>
-          <p>Just want to import the runs once without subscribing?</p>
-          <a id="download-ics-link" class="subscribe-action-btn" href="calendar.ics" download="pbb8-speedruns.ics">📅 Download .ics file</a>
-        </div>
-      </div>
-    </div>
-  </div>
+        const embed = new Twitch.Embed('live-twitch-embed', {
+          channel: 'pbb8',
+          width: '100%',
+          height: '100%',
+          autoplay: false,
+          parent: parentDomains
+        });
 
-  <!-- Commentator Modal -->
-  <div id="commentator-modal" class="modal-overlay hidden">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 id="modal-event-title">Commentators</h3>
-        <button id="modal-close" class="modal-close-btn" aria-label="Close">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="commentator-add-row">
-          <input type="text" id="commentator-name-input" placeholder="Commentator name" autocomplete="off" />
-          <button id="commentator-add-btn">+ Add</button>
-        </div>
-        <ul id="commentator-list" class="commentator-list"></ul>
-        <p id="commentator-empty" class="commentator-empty">No commentators added yet.</p>
-      </div>
-    </div>
-  </div>
+        embed.addEventListener(Twitch.Embed.VIDEO_READY, function () {
+          const player = embed.getPlayer();
+          if (!player) return;
+          player.addEventListener(Twitch.Player.ONLINE, showLive);
+          player.addEventListener(Twitch.Player.OFFLINE, showOffline);
+        });
+      };
 
-  <script src="js/events.js"></script>
-  <script src="js/commentators.js"></script>
-  <script src="js/calendar.js"></script>
+      const sdk = document.createElement('script');
+      sdk.src = 'https://embed.twitch.tv/embed/v1.js';
+      sdk.async = true;
+      document.body.appendChild(sdk);
+    })();
+  </script>
 </body>
 </html>
