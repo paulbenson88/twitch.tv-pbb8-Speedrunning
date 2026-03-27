@@ -90,7 +90,7 @@ const MARATHON_EVENTS = [
         category: "All Missions",
         console: "PC",
         estimate: "PT35M",
-        date: "2026-04-12T14:25:00Z",
+        date: "2026-04-12T14:35:00Z",
         runId: 51375,
       },
     ],
