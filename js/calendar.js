@@ -712,11 +712,39 @@
   });
 
   /* ── Admin Auth ───────────────────────────────────── */
-  const ADMIN_PASSWORD = "pbb8";
+  const ADMIN_PASSCODE_KEY = "speedrun-admin-passcode";
   const ADMIN_STORAGE_KEY = "speedrun-admin-auth";
 
   function isAdmin() {
     return localStorage.getItem(ADMIN_STORAGE_KEY) === "true";
+  }
+
+  function getStoredAdminPasscode() {
+    return localStorage.getItem(ADMIN_PASSCODE_KEY) || "";
+  }
+
+  function ensureAdminPasscode() {
+    const existing = getStoredAdminPasscode();
+    if (existing) return true;
+
+    const first = prompt("Set a new admin passcode for this browser:");
+    if (first === null) return false;
+    const trimmedFirst = first.trim();
+    if (!trimmedFirst) {
+      alert("Passcode cannot be empty.");
+      return false;
+    }
+
+    const second = prompt("Confirm your new admin passcode:");
+    if (second === null) return false;
+    const trimmedSecond = second.trim();
+    if (trimmedFirst !== trimmedSecond) {
+      alert("Passcodes did not match.");
+      return false;
+    }
+
+    localStorage.setItem(ADMIN_PASSCODE_KEY, trimmedFirst);
+    return true;
   }
 
   function setAdminMode(enabled) {
@@ -738,8 +766,11 @@
     if (isAdmin()) {
       setAdminMode(false);
     } else {
-      const pw = prompt("Enter admin password:");
-      if (pw === ADMIN_PASSWORD) {
+      if (!ensureAdminPasscode()) {
+        return;
+      }
+      const pw = prompt("Enter admin passcode:");
+      if (pw !== null && pw.trim() === getStoredAdminPasscode()) {
         setAdminMode(true);
       } else if (pw !== null) {
         alert("Incorrect password.");
