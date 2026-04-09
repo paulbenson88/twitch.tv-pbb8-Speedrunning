@@ -85,7 +85,11 @@
     return map;
   }
 
-  const eventMap = buildEventMap(MARATHON_EVENTS);
+  let eventMap = buildEventMap(MARATHON_EVENTS);
+
+  function rebuildEventMap() {
+    eventMap = buildEventMap(MARATHON_EVENTS);
+  }
 
   /* ── DOM References ───────────────────────────────── */
   const grid = document.getElementById("calendar-grid");
@@ -188,7 +192,8 @@
       const runs = ev.runs || [];
       if (runs.length > 0) {
         marathonHTML += `<div class="runs-section">`;
-        for (const run of runs) {
+        for (let runIdx = 0; runIdx < runs.length; runIdx++) {
+          const run = runs[runIdx];
           const runDate = new Date(run.date);
           const commKey = runCommentatorKey(ev.name, run);
           const comms = CommentatorManager.getForEvent(commKey);
@@ -199,15 +204,17 @@
             : "No commentators";
           const badgeClass = totalCount > 0 && confirmedCount === totalCount
             ? "badge-complete" : totalCount > 0 ? "badge-partial" : "badge-empty";
+          const editBtn = `<button class="submission-edit-btn" data-submission-key="${run.submissionKey || ""}" data-local-key="${encodeURIComponent(run.localKey || "")}" data-ev-idx="${evIdx}" data-run-idx="${runIdx}" title="Edit submission">✏️ Edit</button>`;
 
           marathonHTML += `
-            <div class="run-card">
+            <div class="run-card has-edit">
+              ${editBtn}
               <div class="run-info">
                 <span class="run-game">${run.game}</span>
                 <span class="run-time">${fmtShortDate(runDate)} ${fmtTime(runDate)} <span class="tz-note">(shown in your local timezone)</span></span>
               </div>
               <div class="run-actions">
-                ${calDropdownHTML(evIdx, runs.indexOf(run))}
+                ${calDropdownHTML(evIdx, runIdx)}
                 <button class="commentator-btn ${badgeClass}" data-event="${commKey}">🎙️ Commentators <span class="comm-badge">${badgeText}</span></button>
               </div>
             </div>
@@ -361,7 +368,7 @@
         if (aNextRun !== null && bNextRun !== null) return aNextRun - bNextRun;
         return new Date(a.start) - new Date(b.start);
       })
-      .slice(0, 6);
+      .slice(0, 20);
 
     upcomingList.innerHTML = "";
     if (upcoming.length === 0) {
@@ -377,7 +384,8 @@
 
       let runsHTML = "";
       const runs = ev.runs || [];
-      for (const run of runs) {
+      for (let runIdx = 0; runIdx < runs.length; runIdx++) {
+        const run = runs[runIdx];
         const runDate = new Date(run.date);
         const estimateMs = run.estimate ? durationMs(run.estimate) : 0;
         const runEnd = new Date(runDate.getTime() + estimateMs);
@@ -391,15 +399,17 @@
           : "No commentators";
         const badgeClass = totalCount > 0 && confirmedCount === totalCount
           ? "badge-complete" : totalCount > 0 ? "badge-partial" : "badge-empty";
+        const editBtn = `<button class="submission-edit-btn" data-submission-key="${run.submissionKey || ""}" data-local-key="${encodeURIComponent(run.localKey || "")}" data-ev-idx="${evIdx}" data-run-idx="${runIdx}" title="Edit submission">✏️ Edit</button>`;
 
         runsHTML += `
-          <div class="run-card">
+          <div class="run-card has-edit">
+            ${editBtn}
             <div class="run-info">
               <span class="run-game">${run.game}</span>
               <span class="run-time">${fmtShortDate(runDate)} ${fmtTime(runDate)} <span class="tz-note">(shown in your local timezone)</span></span>
             </div>
             <div class="run-actions">
-              ${calDropdownHTML(evIdx, runs.indexOf(run))}
+              ${calDropdownHTML(evIdx, runIdx)}
               <button class="commentator-btn ${badgeClass}" data-event="${commKey}">🎙️ <span class="comm-badge">${badgeText}</span></button>
             </div>
           </div>
@@ -414,6 +424,13 @@
       `;
       upcomingList.appendChild(li);
     }
+  }
+
+  function refreshCalendarFromEvents() {
+    rebuildEventMap();
+    renderNextUp();
+    renderMonth();
+    renderUpcoming();
   }
 
   /* ── Navigation ───────────────────────────────────── */
@@ -624,9 +641,12 @@
 
   const subscribeModal = document.getElementById("subscribe-modal");
   const subscribeBtn = document.getElementById("subscribe-btn");
+  const subscribeOthersBtn = document.getElementById("subscribe-others-btn");
   const subscribeClose = document.getElementById("subscribe-close");
+  const subscribeTitle = document.getElementById("subscribe-title");
+  const subscribeIntro = document.getElementById("subscribe-intro");
 
-  function getIcsUrl() {
+  function getIcsUrl(feedType) {
     // Build the full URL to calendar.ics based on current page location
     const loc = window.location;
     let base = loc.origin + loc.pathname;
@@ -634,12 +654,24 @@
     base = base.replace(/\/[^/]*\.[^/]*$/, "");
     // Ensure trailing slash
     if (!base.endsWith("/")) base += "/";
-    return `${base}calendar.ics`;
+    return `${base}${feedType === "others" ? "calendar-others.ics" : "calendar.ics"}`;
   }
 
-  function openSubscribeModal() {
-    const icsUrl = getIcsUrl();
+  function openSubscribeModal(feedType) {
+    const isOthers = feedType === "others";
+    const icsUrl = getIcsUrl(feedType);
     const webcalUrl = icsUrl.replace(/^https?:/, "webcal:");
+
+    if (subscribeTitle) {
+      subscribeTitle.textContent = isOthers
+        ? "Subscribe to Other Runners"
+        : "Subscribe to My Runs";
+    }
+    if (subscribeIntro) {
+      subscribeIntro.textContent = isOthers
+        ? "Subscribe to runs by other people in games I run."
+        : "Subscribe to pbb8's personal runs. It stays synced automatically when new runs are added!";
+    }
 
     // Set webcal link
     document.getElementById("webcal-link").href = webcalUrl;
@@ -649,10 +681,19 @@
     document.getElementById("outlook-url").value = icsUrl;
     document.getElementById("other-url").value = icsUrl;
 
+    const download = document.getElementById("download-ics-link");
+    if (download) {
+      download.href = icsUrl;
+      download.download = isOthers ? "pbb8-other-runners.ics" : "pbb8-speedruns.ics";
+    }
+
     subscribeModal.classList.remove("hidden");
   }
 
-  subscribeBtn.addEventListener("click", openSubscribeModal);
+  subscribeBtn.addEventListener("click", () => openSubscribeModal("my"));
+  if (subscribeOthersBtn) {
+    subscribeOthersBtn.addEventListener("click", () => openSubscribeModal("others"));
+  }
   subscribeClose.addEventListener("click", () => subscribeModal.classList.add("hidden"));
   subscribeModal.addEventListener("click", (e) => {
     if (e.target === subscribeModal) subscribeModal.classList.add("hidden");
@@ -769,4 +810,8 @@
   setInterval(renderNextUp, 60000);
   renderMonth();
   renderUpcoming();
+
+  // Allow external scripts (e.g. Firebase submissions) to inject runs
+  // and re-render using the same native formatting and behaviors.
+  window.refreshCalendarFromEvents = refreshCalendarFromEvents;
 })();

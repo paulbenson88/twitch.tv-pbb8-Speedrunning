@@ -574,14 +574,38 @@ main.calendar-page {
   border-color: var(--accent);
 }
 
-#upcoming-list {
+.submit-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.submit-link-btn:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+#upcoming-list,
+#other-runners-list {
   list-style: none;
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
 }
 
-#upcoming-list li {
+#upcoming-list li,
+#other-runners-list li {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -592,17 +616,21 @@ main.calendar-page {
   gap: 0.3rem;
 }
 
-#upcoming-list .event-name {
+#upcoming-list .event-name,
+#other-runners-list .event-name {
   font-weight: 600;
 }
 
 #upcoming-list .event-date,
-#upcoming-list .event-time {
+#upcoming-list .event-time,
+#other-runners-list .event-date,
+#other-runners-list .event-time {
   color: var(--accent);
   font-size: 0.9rem;
 }
 
-#upcoming-list .event-desc {
+#upcoming-list .event-desc,
+#other-runners-list .event-desc {
   width: 100%;
   color: var(--text-muted);
   font-size: 0.85rem;
@@ -652,6 +680,11 @@ footer {
   border: 1px solid var(--border);
   border-radius: 6px;
   margin-bottom: 0.4rem;
+  position: relative;
+}
+
+.run-card.has-edit {
+  padding-right: 4.3rem;
 }
 
 .run-card:last-child {
@@ -701,7 +734,26 @@ footer {
   display: inline-flex;
 }
 
+.submission-cal-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
 .add-to-cal-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.submission-add-to-cal-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -720,7 +772,79 @@ footer {
   border-color: var(--accent);
 }
 
+.submission-add-to-cal-btn:hover {
+  background: var(--card);
+  border-color: var(--accent);
+}
+
+.submission-edit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.55rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  position: absolute;
+  top: 0.45rem;
+  right: 0.45rem;
+}
+
+.submission-edit-btn:hover {
+  background: var(--card);
+  border-color: var(--accent);
+}
+
+.submission-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.submission-edit-form label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+
+.submission-edit-form input {
+  width: 100%;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.5rem 0.6rem;
+  font-size: 0.9rem;
+}
+
+.submission-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
 .cal-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+  min-width: 180px;
+  overflow: hidden;
+  animation: fadeIn 0.15s ease;
+}
+
+.submission-cal-dropdown {
   display: none;
   position: absolute;
   top: 100%;
@@ -740,7 +864,26 @@ footer {
   display: block;
 }
 
+.submission-cal-wrap.open .submission-cal-dropdown {
+  display: block;
+}
+
 .cal-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.85rem;
+  color: var(--text);
+  text-align: left;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-bottom: 1px solid var(--border);
+}
+
+.submission-cal-item {
   display: block;
   width: 100%;
   padding: 0.55rem 0.9rem;
@@ -759,7 +902,16 @@ footer {
   border-bottom: none;
 }
 
+.submission-cal-item:last-child {
+  border-bottom: none;
+}
+
 .cal-dropdown-item:hover {
+  background: var(--surface);
+  color: var(--accent);
+}
+
+.submission-cal-item:hover {
   background: var(--surface);
   color: var(--accent);
 }
@@ -1275,6 +1427,184 @@ footer {
   color: var(--accent-hover);
 }
 
+.vod-actions {
+  margin-top: 0.8rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.vod-edit-btn {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 7px;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.vod-edit-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── Submit Page ───────────────────────────────────── */
+.submit-page {
+  max-width: 920px;
+  display: grid;
+  gap: 1rem;
+}
+
+.submit-intro-card,
+.submit-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.submit-intro-card h2,
+.submit-card h2 {
+  font-size: 1.2rem;
+  margin-bottom: 0.65rem;
+}
+
+.submit-intro-card ol {
+  padding-left: 1.2rem;
+  color: var(--text-muted);
+  display: grid;
+  gap: 0.35rem;
+}
+
+.submit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.submit-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.submit-card label {
+  font-size: 0.86rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+
+.submit-card input,
+.submit-card select,
+.submit-card textarea {
+  width: 100%;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.5rem 0.6rem;
+  font-size: 0.92rem;
+}
+
+.submit-card textarea {
+  resize: vertical;
+}
+
+.submit-help {
+  color: var(--text-muted);
+  font-size: 0.84rem;
+}
+
+.submit-feedback {
+  min-height: 1.1rem;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+.submit-feedback.is-success {
+  color: #57d28c;
+}
+
+.submit-feedback.is-error {
+  color: #ff7c7c;
+}
+
+.import-tools {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-bottom: 0.2rem;
+}
+
+.import-tools h3 {
+  font-size: 0.98rem;
+  margin-bottom: 0.35rem;
+}
+
+.import-row {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.55rem 0 0.4rem;
+}
+
+.import-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 0.5rem 0.8rem;
+  cursor: pointer;
+}
+
+.import-btn:hover {
+  border-color: var(--accent);
+}
+
+.imported-runs {
+  margin-top: 0.45rem;
+}
+
+.imported-runs-list {
+  display: grid;
+  gap: 0.35rem;
+  max-height: 180px;
+  overflow: auto;
+  margin: 0.45rem 0;
+  padding-right: 0.25rem;
+}
+
+.import-run-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+}
+
+.submit-issue-btn {
+  margin-top: 0.6rem;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.58rem 0.9rem;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.submit-issue-btn:hover {
+  opacity: 0.9;
+}
+
 /* ── Responsive ──────────────────────────────────────── */
 @media (max-width: 600px) {
   .day-cell {
@@ -1293,6 +1623,24 @@ footer {
 
   .landing-cta {
     width: 100%;
+  }
+
+  .submit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .import-row {
+    flex-direction: column;
+  }
+
+  .submit-issue-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .submit-link-btn {
+    width: 100%;
+    justify-content: center;
   }
 
   .event-label {
