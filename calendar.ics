@@ -10,7 +10,7 @@ X-PUBLISHED-TTL:PT1H
 BEGIN:VEVENT
 UID:run-51011@speedruncalendar
 DTSTART:20260315T152500Z
-DTEND:20260315T155500Z
+DTEND:20260315T160000Z
 SUMMARY:Ollie-Oop - Gamers Against Cancer 2026
 DESCRIPTION:Watch at: https://twitch.tv/GFHMarathon
 URL:https://twitch.tv/GFHMarathon
