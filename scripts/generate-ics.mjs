@@ -57,6 +57,7 @@ async function loadBaseEvents() {
 
 function normalizeSubmission(raw) {
   if (!raw || typeof raw !== "object") return null;
+  if (String(raw.submissionType || "").toLowerCase() === "vod-override") return null;
 
   if (raw.deleted === true || raw.isDeleted === true) return null;
   const status = String(raw.status || "").toLowerCase();
@@ -101,16 +102,17 @@ async function maybeLoadFirebaseSubmissions() {
     return [];
   }
 
-  let admin;
+  let appMod;
   try {
-    admin = await import("firebase-admin");
+    appMod = await import("firebase-admin/app");
   } catch {
     console.warn("firebase-admin is not available. Continuing without Firestore submissions.");
     return [];
   }
 
-  const { initializeApp, cert, getApps } = admin;
-  const { getFirestore } = await import("firebase-admin/firestore");
+  const { initializeApp, cert, getApps } = appMod;
+  const firestoreMod = await import("firebase-admin/firestore");
+  const getFirestore = firestoreMod.getFirestore;
 
   let serviceAccount;
   try {
@@ -202,7 +204,23 @@ function submissionToFeedEvent(s) {
 function dedupeFeedEvents(events) {
   const byUid = new Map();
   events.forEach((ev) => {
-    byUid.set(ev.uid, ev);
+    const dedupeKey = [
+      ev.summary,
+      ev.start.toISOString(),
+      ev.runnerType
+    ].join("|");
+
+    const prev = byUid.get(dedupeKey);
+    if (!prev) {
+      byUid.set(dedupeKey, ev);
+      return;
+    }
+
+    const prevScore = (prev.url ? 2 : 0) + (String(prev.description || "").length > 30 ? 1 : 0);
+    const nextScore = (ev.url ? 2 : 0) + (String(ev.description || "").length > 30 ? 1 : 0);
+    if (nextScore >= prevScore) {
+      byUid.set(dedupeKey, ev);
+    }
   });
   return Array.from(byUid.values()).sort((a, b) => a.start - b.start);
 }

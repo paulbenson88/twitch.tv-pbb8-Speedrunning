@@ -95,4 +95,40 @@ const MARATHON_EVENTS = [
       },
     ],
   },
+  {
+    name: "Prevent-A-Thon 7",
+    start: "2026-05-01T18:00:00Z",
+    end: "2026-05-02T10:00:00Z",
+    twitch: "",
+    url: "",
+    runs: [
+      {
+        game: "Bad Way",
+        category: "Any% (No Torch Zip)",
+        console: "PC",
+        estimate: "PT35M",
+        date: "2026-05-02T04:21:00Z",
+        runId: "prevent-a-thon-7-bad-way",
+        runner: "pbb8",
+      },
+    ],
+  },
+  {
+    name: "Mint-A-Thon",
+    start: "2026-05-17T12:00:00Z",
+    end: "2026-05-17T21:00:00Z",
+    twitch: "",
+    url: "",
+    runs: [
+      {
+        game: "Bad Way",
+        category: "(Any% - No Torch Zip)",
+        console: "PC",
+        estimate: "PT35M",
+        date: "2026-05-17T16:16:00Z",
+        runId: "mint-a-thon-bad-way",
+        runner: "pbb8",
+      },
+    ],
+  },
 ];

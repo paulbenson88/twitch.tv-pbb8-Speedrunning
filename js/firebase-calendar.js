@@ -34,6 +34,7 @@
 
   function normalizeRun(raw, source) {
     if (!raw) return null;
+    if (String(raw.submissionType || "").toLowerCase() === "vod-override") return null;
 
     const eventName = String(raw.eventName || "Submitted Marathon").trim();
     const gameName = String(raw.gameName || "Unknown Game").trim();
@@ -201,7 +202,8 @@
       return snap.docs
         .map((doc) => normalizeRun(doc.data(), "firebase"))
         .filter(Boolean);
-    } catch {
+    } catch (err) {
+      console.warn("Could not load Firestore submissions.", err);
       return [];
     }
   }
