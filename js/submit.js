@@ -30,9 +30,7 @@
     ownerState = nextState || ownerState;
 
     if (ownerStatusEl) {
-      if (!ownerState.ownerConfigured) {
-        ownerStatusEl.textContent = "Owner access required. Sign in with the owner account.";
-      } else if (ownerState.isOwner) {
+      if (ownerState.isOwner) {
         ownerStatusEl.textContent = `Owner access granted: ${ownerState.user?.email || ownerState.user?.uid || "signed in"}`;
       } else if (ownerState.user) {
         ownerStatusEl.textContent = "Signed in, but this account is not owner-approved.";
@@ -41,7 +39,7 @@
       }
     }
 
-    if (ownerSignInBtn) ownerSignInBtn.classList.toggle("hidden", ownerState.isOwner);
+    if (ownerSignInBtn) ownerSignInBtn.classList.toggle("hidden", Boolean(ownerState.user));
     if (ownerSignOutBtn) ownerSignOutBtn.classList.toggle("hidden", !ownerState.user);
 
     const showForms = Boolean(ownerState.isOwner);

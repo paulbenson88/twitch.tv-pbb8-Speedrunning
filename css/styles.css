@@ -99,11 +99,20 @@ header h1 {
 }
 
 .owner-auth-controls {
-  margin-top: 0.8rem;
-  display: inline-flex;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  margin-top: 0;
+  display: flex;
   gap: 0.5rem;
   align-items: center;
   flex-wrap: wrap;
+  justify-content: flex-end;
+  max-width: min(90vw, 520px);
+}
+
+.owner-auth-controls.with-admin {
+  right: 4.5rem;
 }
 
 .owner-auth-status {
@@ -1637,6 +1646,17 @@ footer {
 
 /* ── Responsive ──────────────────────────────────────── */
 @media (max-width: 600px) {
+  .owner-auth-controls {
+    position: static;
+    margin-top: 0.8rem;
+    justify-content: center;
+    max-width: 100%;
+  }
+
+  .owner-auth-controls.with-admin {
+    right: auto;
+  }
+
   .day-cell {
     min-height: 54px;
     padding: 0.25rem;

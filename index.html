@@ -17,6 +17,11 @@
       <a href="runs.html" class="site-tab">Previous Runs</a>
       <a href="submit.html" class="site-tab">Submit Updates</a>
     </nav>
+    <div class="owner-auth-controls" id="owner-auth-controls">
+      <span id="owner-auth-status" class="owner-auth-status">Owner tools locked</span>
+      <button id="owner-signin-btn" type="button" class="owner-auth-btn">Sign in</button>
+      <button id="owner-signout-btn" type="button" class="owner-auth-btn hidden">Sign out</button>
+    </div>
   </header>
 
   <main class="landing-page">
@@ -46,11 +51,56 @@
     <p>&copy; 2026 Speedrun Marathon Calendar</p>
   </footer>
 
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/owner-auth.js"></script>
   <script>
     (function () {
       const liveWrap = document.getElementById('stream-live-wrap');
       const offlineWrap = document.getElementById('stream-offline');
       const host = window.location.hostname || 'localhost';
+      const ownerStatusEl = document.getElementById('owner-auth-status');
+      const ownerSignInBtn = document.getElementById('owner-signin-btn');
+      const ownerSignOutBtn = document.getElementById('owner-signout-btn');
+
+      function applyOwnerState(state) {
+        if (ownerStatusEl) {
+          if (state && state.isOwner) {
+            ownerStatusEl.textContent = `Owner tools unlocked: ${state.user?.email || state.user?.uid || 'signed in'}`;
+          } else if (state && state.user) {
+            ownerStatusEl.textContent = 'Signed in';
+          } else {
+            ownerStatusEl.textContent = 'Owner tools locked';
+          }
+        }
+        if (ownerSignInBtn) ownerSignInBtn.classList.toggle('hidden', Boolean(state && state.user));
+        if (ownerSignOutBtn) ownerSignOutBtn.classList.toggle('hidden', !(state && state.user));
+      }
+
+      if (ownerSignInBtn && window.SpeedrunOwnerAuth) {
+        ownerSignInBtn.addEventListener('click', async () => {
+          try {
+            await window.SpeedrunOwnerAuth.signInWithGoogle();
+          } catch (err) {
+            window.alert(`Sign in failed. ${err && err.message ? err.message : ''}`.trim());
+          }
+        });
+      }
+
+      if (ownerSignOutBtn && window.SpeedrunOwnerAuth) {
+        ownerSignOutBtn.addEventListener('click', async () => {
+          try {
+            await window.SpeedrunOwnerAuth.signOut();
+          } catch (err) {
+            window.alert(`Sign out failed. ${err && err.message ? err.message : ''}`.trim());
+          }
+        });
+      }
+
+      if (window.SpeedrunOwnerAuth) {
+        window.SpeedrunOwnerAuth.onChange((state) => applyOwnerState(state));
+      }
 
       function showOffline() {
         liveWrap.classList.add('hidden');

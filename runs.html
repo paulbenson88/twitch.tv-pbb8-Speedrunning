@@ -113,9 +113,7 @@
         ownerState = nextState || ownerState;
 
         if (ownerStatusEl) {
-          if (!ownerState.ownerConfigured) {
-            ownerStatusEl.textContent = 'Owner tools locked';
-          } else if (ownerState.isOwner) {
+          if (ownerState.isOwner) {
             ownerStatusEl.textContent = `Owner tools unlocked: ${ownerState.user?.email || ownerState.user?.uid || 'signed in'}`;
           } else if (ownerState.user) {
             ownerStatusEl.textContent = 'Signed in, but this account is not owner-approved';
@@ -125,7 +123,7 @@
         }
 
         if (ownerSignInBtn) {
-          ownerSignInBtn.classList.toggle('hidden', ownerState.isOwner);
+          ownerSignInBtn.classList.toggle('hidden', Boolean(ownerState.user));
         }
         if (ownerSignOutBtn) {
           ownerSignOutBtn.classList.toggle('hidden', !ownerState.user);
