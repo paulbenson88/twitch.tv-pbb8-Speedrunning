@@ -226,7 +226,15 @@
 
     submissions.forEach((s) => {
       const dedupeKey = `${s.eventName}|${s.gameName}|${s.categoryName}|${s.runnerName}|${new Date(s.runDateIso).toISOString()}`;
-      if (keySet.has(dedupeKey)) return;
+      if (keySet.has(dedupeKey)) {
+        // Backfill missing twitch/url on the existing marathon entry from the submission.
+        const existing = window.MARATHON_EVENTS.find((ev) => ev.name === s.eventName);
+        if (existing) {
+          if (!existing.twitch && s.streamUrl) existing.twitch = parseTwitchChannel(s.streamUrl);
+          if (!existing.url && s.scheduleUrl) existing.url = s.scheduleUrl;
+        }
+        return;
+      }
 
       const runId = `submitted-${btoa(unescape(encodeURIComponent(dedupeKey))).replace(/[^a-zA-Z0-9]/g, "").slice(0, 24)}`;
 
@@ -376,8 +384,15 @@
     const list = document.getElementById("upcoming-list");
     if (!list || !submissions.length) return;
 
+    const now = new Date();
     const existingText = list.textContent || "";
-    const missing = submissions.filter((s) => !existingText.includes(s.eventName));
+    const missing = submissions.filter((s) => {
+      if (existingText.includes(s.eventName)) return false;
+      // Don't show runs whose estimated end time has already passed.
+      const start = new Date(s.runDateIso);
+      const end = new Date(start.getTime() + durationMs(s.estimateIso));
+      return end >= now;
+    });
     if (!missing.length) return;
 
     missing
