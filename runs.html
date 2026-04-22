@@ -114,7 +114,7 @@
 
         if (ownerStatusEl) {
           if (!ownerState.ownerConfigured) {
-            ownerStatusEl.textContent = 'Owner tools locked (configure owner email/uid in firebase-config.js)';
+            ownerStatusEl.textContent = 'Owner tools locked';
           } else if (ownerState.isOwner) {
             ownerStatusEl.textContent = `Owner tools unlocked: ${ownerState.user?.email || ownerState.user?.uid || 'signed in'}`;
           } else if (ownerState.user) {

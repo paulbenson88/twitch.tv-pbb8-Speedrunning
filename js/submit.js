@@ -31,7 +31,7 @@
 
     if (ownerStatusEl) {
       if (!ownerState.ownerConfigured) {
-        ownerStatusEl.textContent = "Owner access not configured yet (set owner email/uid in firebase-config.js).";
+        ownerStatusEl.textContent = "Owner access required. Sign in with the owner account.";
       } else if (ownerState.isOwner) {
         ownerStatusEl.textContent = `Owner access granted: ${ownerState.user?.email || ownerState.user?.uid || "signed in"}`;
       } else if (ownerState.user) {
