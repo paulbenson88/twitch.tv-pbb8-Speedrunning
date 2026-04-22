@@ -8,6 +8,66 @@ X-WR-CALDESC:Upcoming speedrun marathon runs by pbb8
 REFRESH-INTERVAL;VALUE=DURATION:PT15M
 X-PUBLISHED-TTL:PT15M
 BEGIN:VEVENT
+UID:run-51011@speedruncalendar
+DTSTAMP:20260315T152500Z
+DTSTART:20260315T152500Z
+DTEND:20260315T160000Z
+SUMMARY:Ollie-Oop - Gamers Against Cancer 2026
+DESCRIPTION:Watch at: https://twitch.tv/GFHMarathon
+URL:https://twitch.tv/GFHMarathon
+LOCATION:https://twitch.tv/GFHMarathon
+END:VEVENT
+BEGIN:VEVENT
+UID:run-50869@speedruncalendar
+DTSTAMP:20260322T145500Z
+DTSTART:20260322T145500Z
+DTEND:20260322T153000Z
+SUMMARY:Ollie-Oop - InstaSpeedathon 2026
+DESCRIPTION:Watch at: https://twitch.tv/InstaSpeedathon
+URL:https://twitch.tv/InstaSpeedathon
+LOCATION:https://twitch.tv/InstaSpeedathon
+END:VEVENT
+BEGIN:VEVENT
+UID:run-50876@speedruncalendar
+DTSTAMP:20260322T154500Z
+DTSTART:20260322T154500Z
+DTEND:20260322T161000Z
+SUMMARY:Bad Way - InstaSpeedathon 2026
+DESCRIPTION:Watch at: https://twitch.tv/InstaSpeedathon
+URL:https://twitch.tv/InstaSpeedathon
+LOCATION:https://twitch.tv/InstaSpeedathon
+END:VEVENT
+BEGIN:VEVENT
+UID:run-sftf2026-ollie-oop@speedruncalendar
+DTSTAMP:20260329T192000Z
+DTSTART:20260329T192000Z
+DTEND:20260329T195500Z
+SUMMARY:Ollie-Oop - Starlight for the Future 2026
+DESCRIPTION:Watch at: https://twitch.tv/supersonic_
+URL:https://twitch.tv/supersonic_
+LOCATION:https://twitch.tv/supersonic_
+END:VEVENT
+BEGIN:VEVENT
+UID:run-sftf2026-bad-way@speedruncalendar
+DTSTAMP:20260329T200500Z
+DTSTART:20260329T200500Z
+DTEND:20260329T203000Z
+SUMMARY:Bad Way - Starlight for the Future 2026
+DESCRIPTION:Watch at: https://twitch.tv/supersonic_
+URL:https://twitch.tv/supersonic_
+LOCATION:https://twitch.tv/supersonic_
+END:VEVENT
+BEGIN:VEVENT
+UID:run-51375@speedruncalendar
+DTSTAMP:20260412T143500Z
+DTSTART:20260412T143500Z
+DTEND:20260412T151000Z
+SUMMARY:Ollie-Oop - No Fish 2026
+DESCRIPTION:Watch at: https://twitch.tv/Channel734
+URL:https://twitch.tv/Channel734
+LOCATION:https://twitch.tv/Channel734
+END:VEVENT
+BEGIN:VEVENT
 UID:submission-Prevent-A-Thon-7-Bad-Way-Any-No-Torch-Zip-pbb8-2026-05-02T04-21-00.000Z@speedruncalendar
 DTSTAMP:20260502T042100Z
 DTSTART:20260502T042100Z
