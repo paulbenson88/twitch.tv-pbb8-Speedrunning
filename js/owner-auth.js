@@ -7,6 +7,7 @@
   const OWNER_UIDS = (window.FIREBASE_OWNER_UIDS || [])
     .map((uid) => String(uid || "").trim())
     .filter(Boolean);
+  const OWNER_ACCESS_CACHE_KEY = "speedrun-owner-submit-access";
 
   const listeners = new Set();
   let auth = null;
@@ -41,6 +42,22 @@
     });
   }
 
+  function readCachedAccess() {
+    try {
+      return localStorage.getItem(OWNER_ACCESS_CACHE_KEY) === "true";
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function writeCachedAccess(canAccess) {
+    try {
+      localStorage.setItem(OWNER_ACCESS_CACHE_KEY, canAccess ? "true" : "false");
+    } catch (_) {
+      // Ignore localStorage write errors.
+    }
+  }
+
   function snapshot() {
     return {
       user,
@@ -51,6 +68,7 @@
   }
 
   function notify() {
+    writeCachedAccess(isOwner);
     updateSubmitTabVisibility(isOwner);
     document.body.classList.toggle("is-owner", isOwner);
 
@@ -77,7 +95,9 @@
   }
 
   const ready = (async function init() {
-    updateSubmitTabVisibility(false);
+    const cachedAccess = readCachedAccess();
+    updateSubmitTabVisibility(cachedAccess);
+    document.body.classList.toggle("is-owner", cachedAccess);
 
     try {
       if (!window.firebase || !firebase.auth) {
